@@ -35,10 +35,6 @@ sudo systemctl enable jenkins || handle_error "Failed to enable Jenkins service.
 echo "INFO: Starting Jenkins service"
 sudo systemctl start jenkins || handle_error "Failed to start Jenkins service."
 
-# Wait for Jenkins to start
-echo "INFO: Sleeping for 30 seconds to allow Jenkins to start"
-sleep 30
-
 # Jenkins Initialization Script
 echo "INFO: Applying Jenkins Initialization Script"
 sudo mkdir -p /var/lib/jenkins/init.groovy.d || handle_error "Failed to create init directory."
@@ -60,7 +56,7 @@ if (instance != null) {
     InstallState.INITIAL_SETUP_COMPLETED.initializeState()
     instance.save()
 }
-EOF || handle_error "Failed to create Jenkins initialization script."
+EOF
 
 # Set ownership of the initialization script
 echo "INFO: Setting ownership for initialization script"
@@ -70,10 +66,6 @@ sudo chmod 644 /var/lib/jenkins/init.groovy.d/init_jenkins.groovy || handle_erro
 # Restart Jenkins to apply initialization script
 echo "INFO: Restarting Jenkins after initialization script"
 sudo systemctl restart jenkins || handle_error "Failed to restart Jenkins."
-
-# Wait for Jenkins to restart
-echo "INFO: Sleeping for 30 seconds to allow Jenkins to restart"
-sleep 30
 
 # Get the initialAdminPassword
 ADMIN_PASSWORD=$(sudo cat /var/lib/jenkins/secrets/initialAdminPassword) || handle_error "Failed to retrieve Jenkins initial admin password."
